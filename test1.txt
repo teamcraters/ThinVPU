@@ -1,0 +1,9 @@
+Description due date Status
+
+Analyzing the documentation                     09/03/2020
+Understanding the software requirements	        09/10/2020
+Requirements Gathering                          09/17/2020
+Constructing the website			09/24/2020
+
+This is updated by sravani
+
