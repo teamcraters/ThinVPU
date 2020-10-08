@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
 
 def stackImages(scale, imgArray):
     rows = len(imgArray)
@@ -40,13 +41,13 @@ def getConters(img):
         area = cv2.contourArea(cnt)
 
         if area > 10:
-            print(area)
+            print('area = ', area)
             cv2.drawContours(imgContourB, cnt, -1, (255, 0, 0), 2)
             # cv2.drawContours(imgContourY, cnt, -1, (203, 255, 0), 1)
             peri = cv2.arcLength(cnt, True)
-            print(peri)
+            print('obj length = ',peri)
             approx = cv2.approxPolyDP(cnt, 0* peri, True )
-            print(len(approx))
+            print('number of corners = ', len(approx))
 
             objCor = len(approx)
             x, y , w, h = cv2.boundingRect(approx)
@@ -65,15 +66,46 @@ def getConters(img):
 
 
 
-path ='Resources/robin19.png'
+path ='Resources/moon.png'
 img =cv2.imread(path)
+img2 =cv2.imread(path, cv2.IMREAD_GRAYSCALE)
 imgContourB = img.copy()
 imgContourY = img.copy()
 
+
+#make; the image gray
 imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+#histogram
+clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(5, 5))
+imghisto = clahe.apply(imgGray)
+
+
+
+#finding the number of contours
+ret, thresh = cv2.threshold(imgGray, 127, 255, 0)
+cont , haierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+print('number of cont', str(len(cont)))
+
+#laplacian
+lap = cv2.Laplacian(imgGray, cv2.CV_64F, ksize=3)
+lap = np.uint8(np.absolute(lap))
+
+
+#sobel
+sobelX= cv2.Sobel(imgGray , cv2.CV_64F , 1 , 0 )
+sobelY = cv2.Sobel(imgGray, cv2.CV_64F, 0, 1)
+
+sobelX = np.uint8(np.absolute(sobelX))
+sobelY = np.uint8(np.absolute(sobelY))
+
+sobelCombined = cv2.bitwise_or(sobelX, sobelY)
+
+
+#make the imh Blur
 imgBlur =  cv2.GaussianBlur(imgGray, (3,3), 3)
-imgBlur2 =  cv2.GaussianBlur(imgGray, (7,7), 2)
-imgCanny = cv2.Canny(imgBlur2,70, 50 )
+imgBlur2 =  cv2.GaussianBlur(img2, (7,7), 2)
+imgCanny = cv2.Canny( imgBlur2,1, 50)
 getConters(imgCanny)
 
 ##### circle detection
@@ -104,8 +136,8 @@ getConters(imgCanny)
 # cv2.imshow("canny ", imgCanny)
 
 
-imgStack = stackImages(0.8, ([img, imgContourB, imgContourY],
-                             [img, imgBlur2, imgCanny]))
+imgStack = stackImages(0.8, ([img2, imgContourB, imgContourY],[lap, sobelY, sobelX],
+                             [sobelCombined, imghisto, imgCanny]))
 cv2.imshow("stack ", imgStack)
 
 cv2.waitKey(0)
