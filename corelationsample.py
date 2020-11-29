@@ -22,9 +22,9 @@ closest = df_all.loc[df_all.groupby(['crater_lat', 'crater_long'])["MILES"].idxm
 
 #adding the 'the Result' column to the data frame  
 conditions = [
-    (closest['MILES'] == '0'),
-    (closest['MILES'] <= '2'), 
-    (closest['MILES'] >= '2.1')
+    (closest['MILES'] == 0),
+    (closest['MILES'] <= 2), 
+    (closest['MILES'] >= 2.1)
 
     ]
 
@@ -32,6 +32,6 @@ conditions = [
 values = ['Exact Matched', 'Nearest match with 2 miles', 'Craters more than 2 miles']
 
 # create a new column and use np.select to assign values to it using our lists as arguments
-states['The Result'] = np.select(conditions, values)
+closest['The Result'] = np.select(conditions, values)
 
-closest.to_csv('C:/Users/Ujjwala Potluri/Desktop/UHCL/Capstone Project/sampleoutput1.csv', index=False,header=True)
+closest.to_csv('C:/Users/Ujjwala Potluri/Desktop/UHCL/Capstone Project/sampleoutput2.csv', index=False,header=True)
