@@ -10,8 +10,8 @@ import pandas as pd
 import numpy as np
 
 def calculate_usun():
-#Read the .txt metadata dataset 
-    #df = pd.read_csv(r'C:/Users/s/Desktop/crater_nav/resource/Metadata_USUN.txt',delimiter=",")
+
+    
     df = pd.read_excel (r'C:/Users/s/Desktop/crater_nav/resource/Metadata_usun.xlsx')
 
     new = df.loc[df['Image Name'] == 'M1260669909RC_pyr.tif']
@@ -51,8 +51,12 @@ def calculate_usun():
     frames = [lro_4direction, lro_2direction, lro_3direction, lro_1direction]
     result = pd.concat(frames)
     new1 = result[['U_sun_x', 'U_sun_y']]
-    a= new1.loc[4437].at['U_sun_x']
-    b= new1.loc[4437].at['U_sun_y']
+   
+    ind=list (new1.index)
+    ind[0] = int(ind[0])
+    
+    a= result.loc[ind[0]].at['U_sun_x']
+    b= result.loc[ind[0]].at['U_sun_y']
     return a,b
 
 
